@@ -30,14 +30,14 @@ def main():
     # 3.保存数据
     #saveData(savepath)
 
-    askURL("https://movie.douban.com/top250?start=")
+    # askURL("https://movie.douban.com/top250?start=")
 
 # 爬取网页（函数）
 def getData(baseurl):
     datalist = []
     for i in range(0,10):                   # 调用获取页面信息的函数，10次，每次25条
         url = baseurl + str(i*25)
-        html = askURL（url）                 # 保存获取到的网页源码
+        html = askURL(url)                 # 保存获取到的网页源码
 
     # 2.逐一解析数据
     return datalist
