@@ -12,7 +12,6 @@ from urllib import response
 from bs4 import BeautifulSoup       # 网页解析，获取数据
 import re                           # 正则表达式，进行文字匹配
 import urllib.request,urllib.error
-import urllib3
 from requests import head           # 指定 URL，获取网页数据
 import xlwt                         # 进行 excel操作
 import sqlite3                      # 进行 SQLite 数据库操作
@@ -20,7 +19,7 @@ import ssl                          # 全局取消证书验证
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main():
-    
+
     baseurl = "https://movie.douban.com/top250?start="
 
     # 1.爬取网页
@@ -32,6 +31,22 @@ def main():
 
     # askURL("https://movie.douban.com/top250?start=")
 
+# 影片详情链接规则
+findLink = re.compile(r'<a href="(.*?)">')             # 创建正则表达式对象，表示规则（字符串的模式）
+# 影片图片
+findImgSrc = re.compile(r'<img.*src="(.*?)"',re.S)       # re.S 让换行符包含在字符中
+# 影片片名
+findTitle = re.compile(r'<span class="title">(.*)</span>')
+# 影片评分
+findRating = re.compile(r'<span class="rating_num" property="v:average">(.*)<span>')
+# 影评人数
+findJudge = re.compile(r'<span>(\d*)人评价</span>')
+# 找到概况
+findInq = re.compile(r'<span class="inq">(.*)</span>')
+# 找到影片的相关内容
+findBd =re.compile(r'<p class="">(.*)</p>',re.S)
+
+
 # 爬取网页（函数）
 def getData(baseurl):
     datalist = []
@@ -40,6 +55,21 @@ def getData(baseurl):
         html = askURL(url)                 # 保存获取到的网页源码
 
     # 2.逐一解析数据
+    soup = BeautifulSoup(html,"html.parser")
+    for item in soup.find_all('div',class_="item"):
+                                            #查找符合要求的字符串，生成列表
+        #print()                            # 测试：查看电影item全部信息
+        data = []                           # 保存一步电影的所有信息
+        item = str(item)         
+
+
+        # 影片详情链接
+        link = re.findall(findLink,item) [0]               # re 库，用来通过正则表达式查找指定的字符串
+        data.append(link)                                   # 添加链接
+        imgSrc = re.findall(findImgSrc,item)[0]             
+        data.append(imgSrc)                                 # 添加图片
+        
+
     return datalist
 
 # 得到指定一个URL的网页内容
